@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 load_dotenv()
-client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=0)
+client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
 
 async def generate_response(input_text: str, context: list[dict] | None = None, model: str = 'gpt-4o') -> str:
