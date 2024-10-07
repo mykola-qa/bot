@@ -16,6 +16,11 @@ def get_all_enabled_bot_users():
     return ids
 
 
+def split_message(message, max_length=4096):
+    # Split the message into chunks of up to max_length characters
+    return [message[i:i + max_length] for i in range(0, len(message), max_length)]
+
+
 async def send_telegram_message(client, chat_id, text):
     # Your logic for sending messages via Telethon goes here
     # Use client.send_message(chat_id, text) or similar methods

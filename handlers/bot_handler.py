@@ -5,7 +5,7 @@ from telethon import events
 
 from db.mongo_db_operation import MongoDBClient
 from utils.openai_utils import generate_response
-from utils.telegram_utils import get_all_enabled_bot_users
+from utils.telegram_utils import get_all_enabled_bot_users, split_message
 
 user_data = {}
 
@@ -65,4 +65,10 @@ def register_bot_handlers(client):
             response_by_ai = await generate_response(input_text=event.message.message, context=messages)
             await db.save_message(user_id=sender.id, message=event.message.message, assistant=False)
             await db.save_message(user_id=sender.id, message=response_by_ai, assistant=True)
-            await event.reply(response_by_ai)
+            if len(response_by_ai) > 4096:
+                responses = split_message(response_by_ai)
+                logging.info(responses)
+                for message in responses:
+                    await event.reply(message)
+            else:
+                await event.reply(response_by_ai)
