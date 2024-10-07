@@ -1,0 +1,39 @@
+# Exclude the .env file
+.env
+
+# Exclude node_modules directory
+node_modules
+
+# Exclude log files
+*.log
+
+# Exclude compiled Python files
+*.pyc
+__pycache__/
+
+# Exclude any Docker-related files that aren't needed in the final image
+Dockerfile
+docker-compose.yml
+
+# Ignore git specific folders and files
+.git
+.gitignore
+
+# Ignore other common temporary files
+*.swp
+*~
+.DS_Store
+.venv
+.venv/
+.idea
+*.iml
+
+# Ignore build directories
+build/
+dist/
+tmp/
+*.tmp
+
+# Ignore any other specific files or directories
+
+# Add any other file or folder patterns you want to ignore
