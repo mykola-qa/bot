@@ -28,7 +28,7 @@ def register_bot_handlers(client):
         # Send initial bot message in private chat
         if not event.is_private:
             pass
-        elif not user_data.get(sender.id):
+        elif not user_data.get(sender.id) and sender.id in ids_with_enabled_bot:
             await event.reply(
                 f"Hello, {sender_name}! Bot is started. Ask anything. Send '/stop' to disable me.",
             )
@@ -51,9 +51,10 @@ def register_bot_handlers(client):
         )
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
+        ids_with_enabled_bot = get_all_enabled_bot_users()
         if not event.is_private:
             pass
-        else:
+        elif sender.id in ids_with_enabled_bot:
             logging.info(
                 f"{sender.username if sender.username else sender.id} has disabled bot."
             )
@@ -70,11 +71,12 @@ def register_bot_handlers(client):
     async def handle_requests_to_bot(event):
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
+        ids_with_enabled_bot = get_all_enabled_bot_users()
         if event.raw_text.startswith("/start") or event.raw_text.startswith("/stop"):
             pass
         elif not event.is_private:
             pass
-        elif user_data.get(sender.id):
+        elif user_data.get(sender.id) and sender.id in ids_with_enabled_bot:
             # Getting user context
             db = MongoDBClient()
             db.connect()
@@ -102,7 +104,8 @@ def register_bot_handlers(client):
     async def handle_personal_requests_to_bot(event):
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
-        if TELEGRAM_BOT_NAME in event.raw_text:
+        ids_with_enabled_bot = get_all_enabled_bot_users()
+        if TELEGRAM_BOT_NAME in event.raw_text and sender.id in ids_with_enabled_bot:
             # Getting user context
             db = MongoDBClient()
             db.connect()
