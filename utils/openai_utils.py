@@ -13,11 +13,11 @@ async def generate_response(
     input_text: str, context: list[dict] | None = None, model: str = "gpt-4o"
 ) -> str:
     if context:
-        context.insert(0, {"role": "system", "content": "Help assistant named puzunich_bot"})
+        context.insert(0, {"role": "system", "content": "You are a helpful assistant named puzunich_bot."})
         context.append({"role": "user", "content": input_text})
     else:
         context = [
-            {"role": "system", "content": "Help assistant"},
+            {"role": "system", "content": "You are a helpful assistant named puzunich_bot."},
             {"role": "user", "content": input_text},
         ]
     logging.info(context)
