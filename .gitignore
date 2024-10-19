@@ -1,6 +1,7 @@
 .env
 todo.txt
 telethon.session
+telethon_bot.session
 .idea/
 tests/__pycache__/
 cicd.txt

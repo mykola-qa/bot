@@ -7,18 +7,16 @@ from telethon.sync import TelegramClient
 from db.enabled_chats import enabled_chats
 
 
-def get_all_enabled_bot_users():
+def get_all_enabled_bot_users() -> deque:
     ids = deque()
-    for key, _ in enabled_chats['groups'].items():
-        ids.append(key)
-    for key, _ in enabled_chats['persons'].items():
+    for key, _ in enabled_chats["persons"].items():
         ids.append(key)
     return ids
 
 
-def split_message(message, max_length=4096):
+def split_message(message: str, max_length: int = 4096):
     # Split the message into chunks of up to max_length characters
-    return [message[i:i + max_length] for i in range(0, len(message), max_length)]
+    return [message[i : i + max_length] for i in range(0, len(message), max_length)]
 
 
 async def send_telegram_message(client, chat_id, text):
@@ -27,7 +25,9 @@ async def send_telegram_message(client, chat_id, text):
     pass
 
 
-async def get_photos_from_group(client, group_invite_link: str = 'https://t.me/+BXJwXURH7VxiYjFi'):
+async def get_photos_from_group(
+    client, group_invite_link: str = "https://t.me/+BXJwXURH7VxiYjFi"
+):
     # Getting information about yourself
     me = await client.get_me()
 
@@ -49,7 +49,7 @@ async def get_photos_from_group(client, group_invite_link: str = 'https://t.me/+
     # You can send messages to yourself...
     # await client.send_message('me', 'Hello, myself!')
     # get chat id
-    channel = await client.get_entity('https://t.me/+BXJwXURH7VxiYjFi')
+    channel = await client.get_entity("https://t.me/+BXJwXURH7VxiYjFi")
     print(channel)
     # ...to some chat ID
     # await client.send_message(channel, 'Testing Telethon!')
@@ -79,7 +79,7 @@ async def get_photos_from_group(client, group_invite_link: str = 'https://t.me/+
     counter = 3
     # async for message in client.iter_messages('me'):
     # async for message in client.iter_messages(channel):
-    async for message in client.iter_messages('@vladislava_romeiko'):
+    async for message in client.iter_messages("@vladislava_romeiko"):
         print(message)
         # await asyncio.sleep(60)
         print(message.id, message.text)
@@ -89,7 +89,7 @@ async def get_photos_from_group(client, group_invite_link: str = 'https://t.me/+
         # if message.photo:
         if message.document:
             path = await message.download_media()
-            print('File saved to', path)  # printed after download is done
+            print("File saved to", path)  # printed after download is done
             counter -= 1
         if not counter:
             break
@@ -117,7 +117,7 @@ async def get_photo_from_message(client):
     # You can send messages to yourself...
     # await client.send_message('me', 'Hello, myself!')
     # get chat id
-    channel = await client.get_entity('https://t.me/+BXJwXURH7VxiYjFi')
+    channel = await client.get_entity("https://t.me/+BXJwXURH7VxiYjFi")
     print(channel)
     # ...to some chat ID
     # await client.send_message(channel, 'Testing Telethon!')
@@ -147,7 +147,7 @@ async def get_photo_from_message(client):
     counter = 3
     # async for message in client.iter_messages('me'):
     # async for message in client.iter_messages(channel):
-    async for message in client.iter_messages('@vladislava_romeiko'):
+    async for message in client.iter_messages("@vladislava_romeiko"):
         print(message)
         # await asyncio.sleep(60)
         print(message.id, message.text)
@@ -157,7 +157,7 @@ async def get_photo_from_message(client):
         # if message.photo:
         if message.document:
             path = await message.download_media()
-            print('File saved to', path)  # printed after download is done
+            print("File saved to", path)  # printed after download is done
             counter -= 1
         if not counter:
             break
