@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 from telethon import events
 
+from db.aiosqlite_db_operation import update_interaction_count, get_statistics, get_user_statistics
+from db.enabled_users import users
 from db.mongo_db_operation import MongoDBClient
 from utils.openai_utils import generate_response
 from utils.telegram_utils import get_all_enabled_bot_users, split_message
@@ -23,6 +25,7 @@ def register_bot_handlers(client):
         )
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
+        await update_interaction_count(sender.id)
         sender_name = sender.username if sender.username else sender.id
         ids_with_enabled_bot = get_all_enabled_bot_users()
         # Send initial bot message in private chat
@@ -51,6 +54,7 @@ def register_bot_handlers(client):
         )
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
+        await update_interaction_count(sender.id)
         ids_with_enabled_bot = get_all_enabled_bot_users()
         if not event.is_private:
             pass
@@ -72,7 +76,8 @@ def register_bot_handlers(client):
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
         ids_with_enabled_bot = get_all_enabled_bot_users()
-        if event.raw_text.startswith("/start") or event.raw_text.startswith("/stop"):
+        msg = event.raw_text
+        if msg.startswith("/start") or msg.startswith("/stop") or msg.startswith("/stats"):
             pass
         elif not event.is_private:
             pass
@@ -86,12 +91,6 @@ def register_bot_handlers(client):
             response_by_ai = await generate_response(
                 input_text=event.message.message, context=messages
             )
-            await db.save_message(
-                user_id=sender.id, message=event.message.message, assistant=False
-            )
-            await db.save_message(
-                user_id=sender.id, message=response_by_ai, assistant=True
-            )
             if len(response_by_ai) > 4096:
                 responses = split_message(response_by_ai)
                 logging.info(responses)
@@ -99,6 +98,13 @@ def register_bot_handlers(client):
                     await event.reply(message)
             else:
                 await event.reply(response_by_ai)
+            await update_interaction_count(sender.id, gpt_request=True)
+            await db.save_message(
+                user_id=sender.id, message=event.message.message, assistant=False
+            )
+            await db.save_message(
+                user_id=sender.id, message=response_by_ai, assistant=True
+            )
 
     @client.on(events.NewMessage)
     async def handle_personal_requests_to_bot(event):
@@ -115,12 +121,6 @@ def register_bot_handlers(client):
             response_by_ai = await generate_response(
                 input_text=event.message.message, context=messages
             )
-            await db.save_message(
-                user_id=sender.id, message=event.message.message, assistant=False
-            )
-            await db.save_message(
-                user_id=sender.id, message=response_by_ai, assistant=True
-            )
             if len(response_by_ai) > 4096:
                 responses = split_message(response_by_ai)
                 logging.info(responses)
@@ -128,3 +128,37 @@ def register_bot_handlers(client):
                     await event.reply(message)
             else:
                 await event.reply(response_by_ai)
+            await update_interaction_count(sender.id, gpt_request=True)
+            await db.save_message(
+                user_id=sender.id, message=event.message.message, assistant=False
+            )
+            await db.save_message(
+                user_id=sender.id, message=response_by_ai, assistant=True
+            )
+
+    @client.on(events.NewMessage(pattern='/stats'))
+    async def stats(event):
+        # Fetch global statistics
+        unique_users, total_interactions, total_gpt_requests = await get_statistics()
+
+        # Compile the stats message
+        stats_message = (
+            f"Global Statistics:\n"
+            f"Total interactions: {total_interactions}\n"
+            f"Unique users: {unique_users}\n"
+            f"Total GPT requests: {total_gpt_requests}\n\n"
+            f"User-specific Statistics:\n"
+        )
+
+        sender = await event.get_sender()
+        if sender.id == tuple(users.keys())[0]:
+            # Fetch and append statistics for each user in enabled_chats
+            for user_id, username in users.items():
+                user_interactions, user_gpt_requests = await get_user_statistics(user_id)
+                stats_message += (
+                    f"{username} (ID: {user_id}):\n"
+                    f"- Interactions: {user_interactions}\n"
+                    f"- GPT Requests: {user_gpt_requests}\n\n"
+                )
+
+        await event.respond(stats_message)

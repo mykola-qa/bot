@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from telethon import TelegramClient
 
+from db.aiosqlite_db_operation import init_aiosqlite_db
 from handlers.bot_handler import register_bot_handlers
 from handlers.message_handler import register_handlers
 from utils.telegram_utils import get_ids_from_contact
@@ -44,4 +45,5 @@ async def main():
 
 
 if __name__ == "__main__":
+    asyncio.run(init_aiosqlite_db())
     asyncio.run(main())

@@ -6,6 +6,8 @@ telethon_bot.session
 tests/__pycache__/
 cicd.txt
 /tests/test_smoke.py
+bot_stats.db
+/db/enabled_users.py
 
 plaintext
 # Byte-compiled / optimized / DLL files
