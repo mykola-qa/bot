@@ -138,27 +138,28 @@ def register_bot_handlers(client):
 
     @client.on(events.NewMessage(pattern='/stats'))
     async def stats(event):
-        # Fetch global statistics
-        unique_users, total_interactions, total_gpt_requests = await get_statistics()
+        if event.is_private:
+            # Fetch global statistics
+            unique_users, total_interactions, total_gpt_requests = await get_statistics()
 
-        # Compile the stats message
-        stats_message = (
-            f"Global Statistics:\n"
-            f"Total interactions: {total_interactions}\n"
-            f"Unique users: {unique_users}\n"
-            f"Total GPT requests: {total_gpt_requests}\n\n"
-            f"User-specific Statistics:\n"
-        )
+            # Compile the stats message
+            stats_message = (
+                f"Global Statistics:\n"
+                f"Total interactions: {total_interactions}\n"
+                f"Unique users: {unique_users}\n"
+                f"Total GPT requests: {total_gpt_requests}\n\n"
+                f"User-specific Statistics:\n"
+            )
 
-        sender = await event.get_sender()
-        if sender.id == tuple(users.keys())[0]:
-            # Fetch and append statistics for each user in enabled_chats
-            for user_id, username in users.items():
-                user_interactions, user_gpt_requests = await get_user_statistics(user_id)
-                stats_message += (
-                    f"{username} (ID: {user_id}):\n"
-                    f"- Interactions: {user_interactions}\n"
-                    f"- GPT Requests: {user_gpt_requests}\n\n"
-                )
+            sender = await event.get_sender()
+            if sender.id == tuple(users.keys())[0]:
+                # Fetch and append statistics for each user in enabled_chats
+                for user_id, username in users.items():
+                    user_interactions, user_gpt_requests = await get_user_statistics(user_id)
+                    stats_message += (
+                        f"{username} (ID: {user_id}):\n"
+                        f"- Interactions: {user_interactions}\n"
+                        f"- GPT Requests: {user_gpt_requests}\n\n"
+                    )
 
-        await event.respond(stats_message)
+            await event.respond(stats_message)
