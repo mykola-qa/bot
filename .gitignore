@@ -5,9 +5,9 @@ telethon_bot.session
 .idea/
 tests/__pycache__/
 cicd.txt
-/tests/test_smoke.py
-bot_stats.db
-/db/enabled_users.py
+tests/test_smoke.py
+sql_lite_db/bot_stats.db
+db/enabled_users.py
 
 plaintext
 # Byte-compiled / optimized / DLL files
