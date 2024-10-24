@@ -1,5 +1,6 @@
 # Exclude the .env file
 .env
+sql_lite_db/bot_stats.db
 
 # Exclude node_modules directory
 node_modules

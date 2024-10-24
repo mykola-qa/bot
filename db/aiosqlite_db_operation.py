@@ -2,7 +2,7 @@ import aiosqlite
 
 
 async def init_aiosqlite_db():
-    async with aiosqlite.connect('bot_stats.db') as db:
+    async with aiosqlite.connect('sql_lite_db/bot_stats.db') as db:
         await db.execute('''
             CREATE TABLE IF NOT EXISTS interactions (
                 user_id INTEGER PRIMARY KEY,
@@ -14,7 +14,7 @@ async def init_aiosqlite_db():
 
 
 async def update_interaction_count(user_id, gpt_request=False):
-    async with aiosqlite.connect('bot_stats.db') as db:
+    async with aiosqlite.connect('sql_lite_db/bot_stats.db') as db:
         cursor = await db.execute(
             'SELECT interaction_count, chat_gpt_requests_counter FROM interactions WHERE user_id = ?', (user_id,))
         row = await cursor.fetchone()
@@ -35,7 +35,7 @@ async def update_interaction_count(user_id, gpt_request=False):
 
 
 async def get_statistics():
-    async with aiosqlite.connect('bot_stats.db') as db:
+    async with aiosqlite.connect('sql_lite_db/bot_stats.db') as db:
         cursor = await db.execute('SELECT COUNT(*) FROM interactions')
         unique_users = (await cursor.fetchone())[0]
 
@@ -49,7 +49,7 @@ async def get_statistics():
 
 
 async def get_user_statistics(user_id):
-    async with aiosqlite.connect('bot_stats.db') as db:
+    async with aiosqlite.connect('sql_lite_db/bot_stats.db') as db:
         cursor = await db.execute(
             'SELECT interaction_count, chat_gpt_requests_counter FROM interactions WHERE user_id = ?', (user_id,))
         row = await cursor.fetchone()
