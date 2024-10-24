@@ -10,15 +10,26 @@ client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
 
 async def generate_response(
-    input_text: str, context: list[dict] | None = None, model: str = "gpt-4o"
+        input_text: str, context: list[dict] | None = None, model: str = "gpt-4o"
 ) -> str:
     if context:
-        context.insert(0, {"role": "system", "content": "You are a helpful assistant named puzunich_bot."})
+        context.insert(0, {
+            "role": "system",
+            "content": """You are a helpful assistant named puzunich_bot. 
+                          If you are questioned in Russian, reply using the Ukrainian language."""
+        })
         context.append({"role": "user", "content": input_text})
     else:
         context = [
-            {"role": "system", "content": "You are a helpful assistant named puzunich_bot."},
-            {"role": "user", "content": input_text},
+            {
+                "role": "system",
+                "content": """You are a helpful assistant named puzunich_bot. 
+                              If you are questioned in Russian, reply using the Ukrainian language."""
+            },
+            {
+                "role": "user",
+                "content": input_text
+            },
         ]
     logging.info(context)
     chat_completion = await client.chat.completions.create(
