@@ -1,3 +1,5 @@
+import logging
+
 import aiosqlite
 
 
@@ -10,6 +12,16 @@ async def init_aiosqlite_db():
                 chat_gpt_requests_counter INTEGER DEFAULT 0
             )
         ''')
+        await db.commit()
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        await db.execute('''
+              CREATE TABLE IF NOT EXISTS messages (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  user_id TEXT NOT NULL,
+                  message TEXT NOT NULL,
+                  assistant BOOLEAN NOT NULL
+              )
+          ''')
         await db.commit()
 
 
@@ -59,3 +71,37 @@ async def get_user_statistics(user_id):
         return interaction_count, gpt_request_count
     else:
         return 0, 0
+
+
+async def save_message(user_id: str, message: str, assistant: bool) -> None:
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        await db.execute(
+            'INSERT INTO messages (user_id, message, assistant) VALUES (?, ?, ?)',
+            (user_id, message, assistant)
+        )
+        await db.commit()
+    logging.info(f"Message {user_id}{message[:10]}... is saved to db.")
+
+
+async def get_context_by_user_id(user_id: str) -> list:
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        cursor = await db.execute(
+            'SELECT message, assistant FROM messages WHERE user_id = ? ORDER BY id DESC LIMIT 30', (user_id,))
+        rows = await cursor.fetchall()
+
+    messages = []
+    for row in rows:
+        role = 'assistant' if row[1] else 'user'
+        messages.append({"role": role, "content": row[0]})
+
+    logging.info(f"Amount of messages - {len(messages)} was collected as context for {user_id} conversation.")
+    return messages
+
+
+async def delete_data_from_db_by_user_id(user_id: str):
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        cursor = await db.execute(
+            'DELETE FROM messages WHERE user_id = ?', (user_id,))
+        deleted_count = cursor.rowcount
+        await db.commit()
+    logging.info(f"Deleted {deleted_count} entries.")

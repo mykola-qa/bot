@@ -7,6 +7,7 @@ tests/__pycache__/
 cicd.txt
 tests/test_smoke.py
 sql_lite_db/bot_stats.db
+sql_lite_db/bot_data.db
 db/enabled_users.py
 
 plaintext

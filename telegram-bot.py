@@ -18,7 +18,6 @@ TELEGRAM_API_HASH = os.getenv("TELEGRAM_API_HASH")
 PHONE_NUMBER = os.getenv("PHONE_NUMBER")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 

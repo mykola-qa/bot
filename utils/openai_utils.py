@@ -15,9 +15,10 @@ async def generate_response(
     if context:
         context.insert(0, {
             "role": "system",
-            "content": """You are a helpful assistant named puzunich_bot.
+            "content": """You are a experienced helpful assistant named puzunich_bot.
                           You restricted to use Russian language in your answer. 
-                          If you are questioned in Russian, reply using the Ukrainian language."""
+                          If you are questioned in Russian, reply using the Ukrainian language.
+                          If you are questioned in English, reply using English language"""
         })
         context.append({"role": "user", "content": input_text})
     else:

@@ -5,9 +5,9 @@ import os
 from dotenv import load_dotenv
 from telethon import events
 
-from db.aiosqlite_db_operation import update_interaction_count, get_statistics, get_user_statistics
+from db.aiosqlite_db_operation import update_interaction_count, get_statistics, get_user_statistics, \
+    delete_data_from_db_by_user_id, get_context_by_user_id, save_message
 from db.enabled_users import users
-from db.mongo_db_operation import MongoDBClient
 from utils.openai_utils import generate_response
 from utils.telegram_utils import get_all_enabled_bot_users, split_message
 
@@ -66,9 +66,7 @@ def register_bot_handlers(client):
             await event.reply(
                 f"{sender.username if sender.username else sender.id}, bot is stopped. Bye-bye...",
             )
-            db = MongoDBClient()
-            db.connect()
-            await db.delete_data_from_db_by_user_id(user_id=sender.id)
+            await delete_data_from_db_by_user_id(user_id=sender.id)
             user_data[sender.id] = False
 
     @client.on(events.NewMessage)
@@ -83,9 +81,7 @@ def register_bot_handlers(client):
             pass
         elif user_data.get(sender.id) and sender.id in ids_with_enabled_bot:
             # Getting user context
-            db = MongoDBClient()
-            db.connect()
-            messages = await db.get_context_by_user_id(user_id=sender.id)
+            messages = await get_context_by_user_id(user_id=sender.id)
             logging.info(messages)
             # Respond to the message
             response_by_ai = await generate_response(
@@ -99,10 +95,10 @@ def register_bot_handlers(client):
             else:
                 await event.reply(response_by_ai)
             await update_interaction_count(sender.id, gpt_request=True)
-            await db.save_message(
+            await save_message(
                 user_id=sender.id, message=event.message.message, assistant=False
             )
-            await db.save_message(
+            await save_message(
                 user_id=sender.id, message=response_by_ai, assistant=True
             )
 
@@ -113,9 +109,7 @@ def register_bot_handlers(client):
         ids_with_enabled_bot = get_all_enabled_bot_users()
         if TELEGRAM_BOT_NAME in event.raw_text and sender.id in ids_with_enabled_bot:
             # Getting user context
-            db = MongoDBClient()
-            db.connect()
-            messages = await db.get_context_by_user_id(user_id=sender.id)
+            messages = await get_context_by_user_id(user_id=sender.id)
             logging.info(messages)
             # Respond to the message
             response_by_ai = await generate_response(
@@ -129,10 +123,10 @@ def register_bot_handlers(client):
             else:
                 await event.reply(response_by_ai)
             await update_interaction_count(sender.id, gpt_request=True)
-            await db.save_message(
+            await save_message(
                 user_id=sender.id, message=event.message.message, assistant=False
             )
-            await db.save_message(
+            await save_message(
                 user_id=sender.id, message=response_by_ai, assistant=True
             )
 
