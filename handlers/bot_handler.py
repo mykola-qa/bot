@@ -33,7 +33,7 @@ def register_bot_handlers(client):
             pass
         elif not user_data.get(sender.id) and sender.id in ids_with_enabled_bot:
             await event.reply(
-                f"Hello, {sender_name}! Bot is started. Ask anything. Send '/stop' to disable me.",
+                f"Hello, {sender_name}! Bot is started. Ask anything.\nSend '/stop' to disable me, send '/reset' to reset context.",
             )
             user_data[sender.id] = True
             logging.info(f"{sender_name} has enabled bot.")
@@ -43,7 +43,7 @@ def register_bot_handlers(client):
                 /start command from {sender_name} is ignored."""
             )
             await event.reply(
-                f"Hello, {sender_name}! Bot was already started. Ask anything. Send '/stop' to disable me.",
+                f"Hello, {sender_name}! Bot was already started. Ask anything.\nSend '/stop' to disable me, send '/reset' to reset context.",
             )
 
     @client.on(events.NewMessage(pattern="/stop"))
@@ -69,13 +69,35 @@ def register_bot_handlers(client):
             await delete_data_from_db_by_user_id(user_id=sender.id)
             user_data[sender.id] = False
 
+    @client.on(events.NewMessage(pattern="/reset"))
+    async def handle_stop_bot_message(event):
+        # Print the incoming message
+        logging.info(
+            f"Received reset bot command: {event.message.message}, chat id: {event.chat_id}"
+        )
+        # Fetch the sender's details to check the username
+        sender = await event.get_sender()
+        await update_interaction_count(sender.id)
+        ids_with_enabled_bot = get_all_enabled_bot_users()
+        if not event.is_private:
+            pass
+        elif sender.id in ids_with_enabled_bot:
+            logging.info(
+                f"{sender.username if sender.username else sender.id} has disabled bot."
+            )
+            # Send initial bot message
+            await delete_data_from_db_by_user_id(user_id=sender.id)
+            await event.reply(
+                f"{sender.username if sender.username else sender.id}, context is reset.",
+            )
+
     @client.on(events.NewMessage)
     async def handle_requests_to_bot(event):
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
         ids_with_enabled_bot = get_all_enabled_bot_users()
         msg = event.raw_text
-        if msg.startswith("/start") or msg.startswith("/stop") or msg.startswith("/stats"):
+        if msg.startswith("/start") or msg.startswith("/stop") or msg.startswith("/stats") or msg.startswith("/reset"):
             pass
         elif not event.is_private:
             pass

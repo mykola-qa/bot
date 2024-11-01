@@ -105,3 +105,24 @@ async def delete_data_from_db_by_user_id(user_id: str):
         deleted_count = cursor.rowcount
         await db.commit()
     logging.info(f"Deleted {deleted_count} entries.")
+
+
+async def reset_bot_data_database():
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        # Drop the table if it exists
+        await db.execute("DROP TABLE IF EXISTS messages")
+
+        # Recreate the table
+        await db.execute('''
+            CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL,
+                message TEXT NOT NULL,
+                assistant BOOLEAN NOT NULL
+            )
+        ''')
+
+        # Commit changes
+        await db.commit()
+
+    logging.info("Context database (bot_data.db) has been reset.")

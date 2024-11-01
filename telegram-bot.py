@@ -9,6 +9,7 @@ from telethon import TelegramClient
 from db.aiosqlite_db_operation import init_aiosqlite_db
 from handlers.bot_handler import register_bot_handlers
 from handlers.message_handler import register_handlers
+from utils.db_utils import reset_database_periodically
 from utils.telegram_utils import get_ids_from_contact
 
 # Load environment variables from .env
@@ -26,6 +27,9 @@ bot_client = TelegramClient("telethon_bot", TELEGRAM_API_ID, TELEGRAM_API_HASH)
 
 
 async def main():
+    # Initialize database
+    await init_aiosqlite_db()
+
     # Register the event handlers
     register_handlers(user_client)
     register_bot_handlers(bot_client)
@@ -39,10 +43,12 @@ async def main():
     logging.info("Bot client is running...")
 
     # Run both clients concurrently
-    await asyncio.gather(user_client.run_until_disconnected(), bot_client.run_until_disconnected())
-    # await user_client.run_until_disconnected()
+    await asyncio.gather(
+        user_client.run_until_disconnected(),
+        bot_client.run_until_disconnected(),
+        reset_database_periodically()
+    )
 
 
 if __name__ == "__main__":
-    asyncio.run(init_aiosqlite_db())
     asyncio.run(main())
