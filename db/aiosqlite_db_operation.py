@@ -5,6 +5,7 @@ import aiosqlite
 
 async def init_aiosqlite_db():
     async with aiosqlite.connect('sql_lite_db/bot_stats.db') as db:
+        # Create the interactions table
         await db.execute('''
             CREATE TABLE IF NOT EXISTS interactions (
                 user_id INTEGER PRIMARY KEY,
@@ -13,7 +14,9 @@ async def init_aiosqlite_db():
             )
         ''')
         await db.commit()
+
     async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        # Create the messages table
         await db.execute('''
               CREATE TABLE IF NOT EXISTS messages (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,6 +25,33 @@ async def init_aiosqlite_db():
                   assistant BOOLEAN NOT NULL
               )
           ''')
+        # Create the user_states table
+        await db.execute('''
+                CREATE TABLE IF NOT EXISTS user_states (
+                    user_id INTEGER PRIMARY KEY,
+                    is_enabled BOOLEAN NOT NULL DEFAULT 0
+                )
+            ''')
+
+        await db.commit()
+    logging.info("Databases initialized.")
+
+
+async def get_user_state(user_id):
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        cursor = await db.execute(
+            'SELECT is_enabled FROM user_states WHERE user_id = ?', (user_id,))
+        row = await cursor.fetchone()
+        return row[0] == 1 if row else False
+
+
+async def set_user_state(user_id, is_enabled):
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        await db.execute(
+            'INSERT INTO user_states (user_id, is_enabled) VALUES (?, ?) '
+            'ON CONFLICT(user_id) DO UPDATE SET is_enabled = ?',
+            (user_id, is_enabled, is_enabled)
+        )
         await db.commit()
 
 
