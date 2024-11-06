@@ -9,7 +9,7 @@ async def reset_database_periodically():
     while True:
         now = datetime.now()
         # Calculate the next occurrence of the target time
-        target_time = time(hour=7, minute=0)  # Change to your desired reset time, e.g., 4:00 AM
+        target_time = time(hour=3, minute=0)  # Change to your desired reset time
         # Create a datetime for today at the target time
         today_target = datetime.combine(now.date(), target_time)
         # If the target time for today has already passed, schedule for the next day
