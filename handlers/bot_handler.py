@@ -129,7 +129,7 @@ def register_bot_handlers(client):
         # Fetch the sender's details to check the username
         sender = await event.get_sender()
         ids_with_enabled_bot = get_all_enabled_bot_users()
-        if TELEGRAM_BOT_NAME in event.raw_text and sender.id in ids_with_enabled_bot:
+        if not event.is_private and TELEGRAM_BOT_NAME in event.raw_text and sender.id in ids_with_enabled_bot:
             # Getting user context
             messages = await get_context_by_user_id(user_id=sender.id)
             logging.info(messages)
