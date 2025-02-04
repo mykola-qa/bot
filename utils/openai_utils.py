@@ -21,23 +21,23 @@ async def generate_response(
             o1-mini
     """
     if context:
-        context.insert(0, {
-            "role": "system",
-            "content": str("You are an experienced, helpful assistant named puzunich_bot."
-                           "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
-                           "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
-                           "Try to reply using the same language as the question.")
-        })
+        # context.insert(0, {
+        #     "role": "system",
+        #     "content": str("You are an experienced, helpful assistant named puzunich_bot."
+        #                    "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
+        #                    "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
+        #                    "Try to reply using the same language as the question.")
+        # })
         context.append({"role": "user", "content": input_text})
     else:
         context = [
-            {
-                "role": "system",
-                "content": str("You are an experienced, helpful assistant named puzunich_bot."
-                               "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
-                               "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
-                               "Try to reply using the same language as the question.")
-            },
+            # {
+            #     "role": "system",
+            #     "content": str("You are an experienced, helpful assistant named puzunich_bot."
+            #                    "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
+            #                    "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
+            #                    "Try to reply using the same language as the question.")
+            # },
             {
                 "role": "user",
                 "content": input_text
