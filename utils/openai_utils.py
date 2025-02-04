@@ -10,15 +10,24 @@ client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
 
 async def generate_response(
-        input_text: str, context: list[dict] | None = None, model: str = "gpt-4o"
+
+        input_text: str, context: list[dict] | None = None, model: str = "o3-mini"
 ) -> str:
+    """
+        supported models:
+            gpt-4o
+            gpt-4o-mini
+            o1
+            o3-mini
+            o1-mini
+    """
     if context:
         context.insert(0, {
             "role": "system",
             "content": str("You are an experienced, helpful assistant named puzunich_bot."
-                           "You are restricted from using the Russian language."
-                           "If you are questioned in Russian language, reply using the Ukrainian language."
-                           "If you are questioned in English language, reply using English language")
+                           "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
+                           "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
+                           "Try to reply using the same language as the question.")
         })
         context.append({"role": "user", "content": input_text})
     else:
@@ -26,9 +35,9 @@ async def generate_response(
             {
                 "role": "system",
                 "content": str("You are an experienced, helpful assistant named puzunich_bot."
-                               "You are restricted from using the Russian language."
-                               "If you are questioned in Russian language, reply using the Ukrainian language."
-                               "If you are questioned in English language, reply using English language")
+                               "You understand the Russian language, but you should reply using Ukrainian, Polish, or English."
+                               "You are a native speaker of Ukrainian, Polish, and English and can translate into any of these languages upon request."
+                               "Try to reply using the same language as the question.")
             },
             {
                 "role": "user",
