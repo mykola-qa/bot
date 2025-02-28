@@ -11,7 +11,7 @@ client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
 async def generate_response(
 
-        input_text: str, context: list[dict] | None = None, model: str = "gpt-4.5-preview"
+        input_text: str, context: list[dict] | None = None, model: str = "gpt-4o"
 ) -> str:
     """
         supported models:
