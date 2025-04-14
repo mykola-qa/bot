@@ -34,6 +34,17 @@ async def init_aiosqlite_db():
             ''')
 
         await db.commit()
+
+        # Create the users_model_type table
+        await db.execute('''
+              CREATE TABLE IF NOT EXISTS users_model_type (
+                  user_id INTEGER PRIMARY KEY,
+                  model_type TEXT NOT NULL
+              )
+          ''')
+
+        await db.commit()
+
     logging.info("Databases initialized.")
 
 
@@ -126,6 +137,24 @@ async def get_context_by_user_id(user_id: str) -> list:
 
     logging.info(f"Amount of messages - {len(messages)} was collected as context for {user_id} conversation.")
     return messages
+
+
+async def get_user_model_type(user_id):
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        cursor = await db.execute(
+            'SELECT model_type FROM users_model_type WHERE user_id = ?', (user_id,))
+        row = await cursor.fetchone()
+        return row[0] == 1 if row else False
+
+
+async def set_user_model_type(user_id, model_type: str):
+    async with aiosqlite.connect('sql_lite_db/bot_data.db') as db:
+        await db.execute(
+            'INSERT INTO users_model_type (user_id, model_type) VALUES (?, ?) '
+            'ON CONFLICT(user_id) DO UPDATE SET model_type = ?',
+            (user_id, model_type, model_type)
+        )
+        await db.commit()
 
 
 async def delete_data_from_db_by_user_id(user_id: str):

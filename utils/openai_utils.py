@@ -8,6 +8,7 @@ from openai import AsyncOpenAI
 load_dotenv()
 client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
+AVAILABLE_MODELS = ['gpt-4o', 'gpt-4o-mini', 'o1-mini']
 
 async def generate_response(
 
