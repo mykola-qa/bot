@@ -104,7 +104,7 @@ def register_bot_handlers(client):
             pass
         elif sender.id in ids_with_enabled_bot:
             model_type = msg.split('/model')[1].strip()
-            if msg.split('/model')[1].strip() in AVAILABLE_MODELS:
+            if model_type in AVAILABLE_MODELS:
                 logging.info(
                     f"{sender.username if sender.username else sender.id} has set {model_type}."
                 )
@@ -135,8 +135,9 @@ def register_bot_handlers(client):
         elif user_state and sender.id in ids_with_enabled_bot:
             # Getting user context
             messages = await get_context_by_user_id(user_id=sender.id)
-            model_type = await get_user_model_type(user_id=sender.id)
             logging.info(messages)
+            model_type = await get_user_model_type(user_id=sender.id)
+            logging.info(f'Model type for user {sender.id} - {model_type}')
             # Respond to the message
             response_by_ai = await generate_response(
                 input_text=event.message.message, context=messages, model=model_type

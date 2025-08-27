@@ -11,4 +11,4 @@ docker run -d --restart unless-stopped \
   bot-app
 
 # docker running on my local pc
-docker run -d --restart unless-stopped --name bot-app --env-file .env -p 5000:5000 -v D:\codenoim\tg-bot\tg-bot\sql_lite_db\:/usr/src/app/sql_lite_db/ bot-app
+docker run -d --restart unless-stopped --name bot-app --env-file .env -p 5000:5000 -v F:\codenoim\tg-bot\tg-bot\sql_lite_db\:/usr/src/app/sql_lite_db/ bot-app

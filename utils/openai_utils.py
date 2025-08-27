@@ -46,7 +46,7 @@ async def generate_response(
             },
         ]
     logging.info(context)
-    model = "gpt-4o"
+    model = "gpt-5-mini"
     chat_completion = await client.chat.completions.create(
         model=model, messages=context
     )
