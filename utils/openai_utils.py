@@ -8,7 +8,7 @@ from openai import AsyncOpenAI
 load_dotenv()
 client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"), max_retries=2)
 
-AVAILABLE_MODELS = ['gpt-4o', 'gpt-4o-mini', 'o1-mini']
+AVAILABLE_MODELS = ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'gpt-5-mini']
 
 async def generate_response(
 
@@ -21,6 +21,7 @@ async def generate_response(
             o1
             o1-mini
             gpt-4.5-preview
+            gpt-5-mini
     """
     if context:
         # context.insert(0, {
@@ -46,7 +47,7 @@ async def generate_response(
             },
         ]
     logging.info(context)
-    model = "gpt-5-mini"
+    model = "gpt-4o"
     chat_completion = await client.chat.completions.create(
         model=model, messages=context
     )
