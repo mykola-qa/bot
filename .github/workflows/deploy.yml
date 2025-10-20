@@ -27,4 +27,6 @@ jobs:
             -p 5000:5000 \
             -v /home/pi/codenoim/bot/sql_lite_db/:/usr/src/app/sql_lite_db/ \
             -v /home/pi/codenoim/bot/db/enabled_users.py:/usr/src/app/db/enabled_users.py:ro \
+            -v /home/pi/codenoim/bot/telethon.session:/usr/src/app/telethon.session \
+            -v /home/pi/codenoim/bot/telethon_bot.session:/usr/src/app/telethon_bot.session \
             bot-app
